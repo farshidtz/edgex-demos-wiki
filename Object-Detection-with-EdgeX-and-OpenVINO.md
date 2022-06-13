@@ -308,3 +308,88 @@ Save and go back to the dashboard view. It should auto refresh every 5s as previ
 
 
 Congratulations! You now have an object detection toolkit that can visualize the results.
+
+### Future Work
+You may continue exploring by doing the following:
+-   Use [EdgeX’s support-notifications service](https://snapcraft.io/edgexfoundry) to send an email whenever a person has been detected
+-   Alternatively, use Grafana to trigger alarm notifications
+-   Use [support-notifications](https://snapcraft.io/edgexfoundry) and [device-rest service](https://snapcraft.io/edgex-device-rest) to trigger a physical alarm whenever a person has been detected
+-   Start and configure support-scheduler to periodically remove the old data. Please see [Setup support-scheduler to Scrub old events](https://github.com/canonical/edgex-demos/wiki/Object-Detection-with-EdgeX-and-OpenVINO/#setup-support-scheduler-to-scrub-old-events) section below
+-   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided.
+
+### Cleanup
+This will remove everything that this demo uses. Not every removal may be desired!
+```bash
+sudo snap remove --purge edgexfoundry
+sudo snap remove --purge edgex-device-usb-camera
+sudo snap remove --purge edgex-device-mqtt
+sudo snap remove --purge edgex-ekuiper
+sudo snap remove --purge edgex-app-service-configurable
+sudo docker rm -f openvino
+```
+If installed for this demo:
+```bash
+sudo snap remove --purge mosquitto
+sudo snap remove --purge grafana
+sudo snap remove --purge docker
+```
+#### Setup support-scheduler to Scrub old events
+Start support-scheduler to schedule actions to occur on specific intervals:
+```bash
+sudo snap start --enable edgexfoundry.support-scheduler
+```
+The default actions will occur on default intervals (every 24 hours) to scrub old events which stayed in core-data for more than 7 days (604800000000000 nanoseconds).
+
+Add customized interval and action:
+#### 1. Add an interval 
+Add an interval that runs every 10 minutes:
+```bash
+curl -X 'POST' \
+  'http://localhost:59861/api/v2/interval' \
+  -d '[
+  {
+    "apiVersion": "v2",
+    "interval": {
+      "interval": "10m",
+      "name": "10minutes",
+      "start": "20220101T000000"
+    }
+  }
+]'
+```
+#### 2. Add an action 
+Add an action that scrubs old events which stayed in core-data for more than 20 minutes (1,200,000,000,000 nanoseconds):
+```bash
+curl -X 'POST' \
+  'http://localhost:59861/api/v2/intervalaction' \
+  -d '[
+  {
+    "apiVersion": "v2",
+    "action": {
+      "name": "scrub-aged-events-20m",
+      "intervalName": "10minutes",
+      "address": {
+        "type": "REST",
+        "host": "localhost",
+        "port": 59880,
+        "path": "/api/v2/event/age/1200000000000",
+        "httpMethod": "DELETE"
+      },
+      "adminState": "UNLOCKED"
+    }
+  }
+]'
+```
+  
+
+The customized actions will occur on customized intervals (every 10 minutes) to scrub old events which stayed in core-data for more than 20 minutes (1200000000000 nanoseconds).
+
+**[tip]** Make sure the interval and action have been added successfully:
+```bash
+curl http://localhost:59861/api/v2/interval/name/10minutes
+curl http://localhost:59861/api/v2/intervalaction/name/scrub-aged-events-20m
+```
+
+### Appendix
+#### Docker image source
+[https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection](https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection)
