@@ -1,6 +1,6 @@
 ## Architecture
 
-![](https://lh6.googleusercontent.com/t625ErMT20YTr-rVihTVf44CzRNVMuJUrah6r7Php9au_6Aykt7usnu6r1ra--5hNOu-aNV_Xh4oUfJq32CS9qIn5HJbjkVWvwDM-YRyRjREGPkatW9WusRIJKvLNf87KrJz_j7_axW8bPVonQ)
+![overview.drawio.svg](https://raw.githubusercontent.com/canonical/edgex-demos/main/openvino-object-detection/figures/overview.drawio.svg)
 
 ## Steps
 ### 1. (EdgeX) Install platform
