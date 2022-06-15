@@ -348,34 +348,10 @@ Save and go back to the dashboard view. It should auto refresh every 5s as previ
 
 Congratulations! You now have an object detection toolkit that can visualize the results.
 
-### Future Work
-You may continue exploring by doing the following:
--   Use [EdgeX’s support-notifications service](https://snapcraft.io/edgexfoundry) to send an email whenever a person has been detected
--   Alternatively, use Grafana to trigger alarm notifications
--   Use [support-notifications](https://snapcraft.io/edgexfoundry) and [device-rest service](https://snapcraft.io/edgex-device-rest) to trigger a physical alarm whenever a person has been detected
--   Start and configure support-scheduler to periodically remove the old data. Please see [Setup support-scheduler to Scrub old events](https://github.com/canonical/edgex-demos/wiki/Object-Detection-with-EdgeX-and-OpenVINO/#setup-support-scheduler-to-scrub-old-events) section below
--   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided.
 
-### Cleanup
-#### Remove installed applications
-This will remove everything that this demo uses. Not every removal may be desired!
-```bash
-sudo snap remove --purge edgexfoundry
-sudo snap remove --purge edgex-device-usb-camera
-sudo snap remove --purge edgex-device-mqtt
-sudo snap remove --purge edgex-ekuiper
-sudo snap remove --purge edgex-app-service-configurable
-sudo docker rm -f openvino
-```
+### 8. (EdgeX) Setup support-scheduler to scrub old events
+If you intent to run this demo for more than an hour, it is best to setup EdgeX's support-scheduler to remove the old events. Otherwise, the database will be populated with thousands of events and eventually slow down.
 
-If installed for this demo:
-```bash
-sudo snap remove --purge mosquitto
-sudo snap remove --purge grafana
-sudo snap remove --purge docker
-```
-
-#### Setup support-scheduler to scrub old events
 Start support-scheduler to schedule actions to occur on specific intervals:
 ```bash
 sudo snap start --enable edgexfoundry.support-scheduler
@@ -433,6 +409,32 @@ The customized actions will occur on customized intervals (every 10 minutes) to 
 ```bash
 curl http://localhost:59861/api/v2/interval/name/10minutes
 curl http://localhost:59861/api/v2/intervalaction/name/scrub-aged-events-20m
+```
+
+### Future Work
+You may continue exploring by doing the following:
+-   Use [EdgeX’s support-notifications service](https://snapcraft.io/edgexfoundry) to send an email whenever a person has been detected
+-   Alternatively, use Grafana to trigger alarm notifications
+-   Use [support-notifications](https://snapcraft.io/edgexfoundry) and [device-rest service](https://snapcraft.io/edgex-device-rest) to trigger a physical alarm whenever a person has been detected
+-   Start and configure support-scheduler to periodically remove the old data. Please see [Setup support-scheduler to Scrub old events](https://github.com/canonical/edgex-demos/wiki/Object-Detection-with-EdgeX-and-OpenVINO/#setup-support-scheduler-to-scrub-old-events) section below
+-   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided.
+
+### Cleanup
+This will remove everything that this demo uses. Not every removal may be desired!
+```bash
+sudo snap remove --purge edgexfoundry
+sudo snap remove --purge edgex-device-usb-camera
+sudo snap remove --purge edgex-device-mqtt
+sudo snap remove --purge edgex-ekuiper
+sudo snap remove --purge edgex-app-service-configurable
+sudo docker rm -f openvino
+```
+
+If installed for this demo:
+```bash
+sudo snap remove --purge mosquitto
+sudo snap remove --purge grafana
+sudo snap remove --purge docker
 ```
 
 ### Appendix
