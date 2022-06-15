@@ -305,8 +305,9 @@ Save and test. You should see Not Found as follows, meaning that the server was 
 #### Create a dashboard
 To do so, go follow: + -> Create / Dashboard
 
-**[TLDR]** Go to dashboard settings -> JSON Model -> add the content of [https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json)
-**Skip all the next steps.**
+**[tip]** The remaining configurations are available as a Grafana dashboard export:
+1. Go to dashboard settings -> JSON Model -> add the content of [grafana-dashboard.json](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json)
+2. Skip all the next Grafana-related configuration steps.
 
 Set the query range to 5min and refresh rate to 5s
 ![](https://lh6.googleusercontent.com/a-BNhOU976M4rYAP77F422mI-zFlwUXtaXA2_owywuY4DAg6ggFBrOOAqchc7mSIU9uJ6xH16ljq2dyP6uR-e1uLCeEPkiXKpceITqfEjHdpHraykH3mfGND_m83vL3nR7En4JjC9sn3Vc-tWw)
