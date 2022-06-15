@@ -29,7 +29,7 @@ sudo mv /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/d
 /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml
 ```
 
-**[optional]** 
+**[tip]** 
 Set the right video device (default is /dev/video0);
 We assume that the device name stays as default "example-camera" in the rest of this document:
 ```bash
