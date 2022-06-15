@@ -426,7 +426,6 @@ sudo snap remove --purge edgexfoundry
 sudo snap remove --purge edgex-device-usb-camera
 sudo snap remove --purge edgex-device-mqtt
 sudo snap remove --purge edgex-ekuiper
-sudo snap remove --purge edgex-app-service-configurable
 sudo docker rm -f openvino
 ```
 
