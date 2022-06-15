@@ -226,12 +226,12 @@ Query the above URLs to make sure the changes have been reflected.
 ### 6. (EdgeX) Setup eKuiper
 eKuiper filters prediction results and sends them back to edgex message bus.
 
-#### Intall
+#### Install
 ```bash
 sudo snap install edgex-ekuiper
 ```
 
-### Configure
+#### Configure
 
 Edit the edgex source file:
 ```bash
@@ -239,9 +239,8 @@ sudo nano /var/snap/edgex-ekuiper/current/etc/sources/edgex.yaml
 ```
 
 In the default section, change as below:
-
-Change `topic: rules-events` to `topic: edgex/events/#`
-Add `messageType: request`
+* Change `topic: rules-events` to `topic: edgex/events/#`
+* Add `messageType: request`
 
 Restart:
 ```bash
@@ -282,7 +281,8 @@ curl http://localhost:59880/api/v2/reading/device/name/people
 
 ### 7. (Grafana) Visualize OpenVINO predictions
 We use Grafana to query the filtered results from EdgeX Core Data. We use a Grafana plugin called JSON API ([https://grafana.com/grafana/plugins/marcusolsson-json-datasource/](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/)) to query and pick the needed information.
-install:
+
+#### Install
 ```bash
 sudo snap install grafana --channel=rock/edge
 sudo snap start --enable grafana
@@ -290,19 +290,19 @@ sudo snap start --enable grafana
 Open UI: [http://localhost:3000/login](http://localhost:3000/login)
 default username/password: admin, admin
 
-#### a1) Install [JSON API](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview) plugin via “configuration->plugin”:
+#### Install JSON API Plugin
+Install the [JSON API](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview) plugin via “configuration->plugin”:
 [http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview))
 
-#### a2) Add datasource
+#### Add a datasource
 Select JSON API and set the following parameters:
-
-name: core-data  
-URL: http://localhost:59880/api/v2/reading
+* name: core-data  
+* URL: http://localhost:59880/api/v2/reading
 
 Save and test. You should see Not Found as follows, meaning that the server was set correctly but there is no resource at the given URL. To resolve this, we will later on set the HTTP path in the query editor.
 ![](https://lh6.googleusercontent.com/ASXSIXANNaM_METFcJ6-BgMAFCn0pYDm0OBs72jEOhUHLsK6UxLoH4xSM0aIsIkmm_gVoFBsDNmJDqbNtBH82O2l5qXevL9bGUsc8ylJShVAReqGaensP_o0iGAA1oLbtNDyOdwBOCM7ctetug)
 
-#### b) Create dashboard
+#### Create a dashboard
 To do so, go follow: + -> Create / Dashboard
 
 **[TLDR]** Go to dashboard settings -> JSON Model -> add the content of [https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json)
@@ -313,8 +313,9 @@ Set the query range to 5min and refresh rate to 5s
 
 **[tip]** The range can be shorted by manually entering the from value such as: now-1m
 
-#### c1) Add an empty panel
-#### c2) Setup query and transformation
+#### Setup the panel
+1. Add an empty panel
+2. Setup query and transformation
 -   Field $.readings[:].value, Type Boolean, Alias Person
 -   Field $.readings[:].origin, Type String, Alias Time(ns)
 -   Path: /device/name/people (this gets appended to the server URL set in datasource configuration to construct the core-data reading endpoint as http://localhost:59880/api/v2/reading/device/name/people)
@@ -324,7 +325,8 @@ Set the query range to 5min and refresh rate to 5s
 At this point, we should be able to see data on a table:![](https://lh6.googleusercontent.com/lJ7kAay6PqxfpQ3_8GIVvFX9Ft821aiaFH5ewBZwjOm4htDgZgBZ5FUeEaMYT-UiOZwXj3r2R2-L6jbIDLqdxoLBwGDrph6NWhnZ6OfATIer0nWugGQrHZqv-9_Ydi03umpbMDxVWbngCpZp1A)
 
 To visualize time series as line graph, we need to add two transformation:
-#### d) In the Transform tab in the query editor:
+
+3. In the Transform tab in the query editor:
 -   Select “Add field from calculation”:
 -   Binary operation, Time(ns)/1000000, Alias Time. This converts the time in nanos to seconds
 -   Add transformation -> Select “Convert field type”
@@ -334,7 +336,7 @@ To visualize time series as line graph, we need to add two transformation:
 
 Auto refresh doesn’t work in the query editor, but only on the dashboard. Refresh manually here to see new results.
 
-#### e) Final touches, configure Graph Style:
+4. Final touches, configure Graph Style:
 -   Fill Opacity: 10
 -   Show Points: Always
 
@@ -362,13 +364,14 @@ sudo snap remove --purge edgex-ekuiper
 sudo snap remove --purge edgex-app-service-configurable
 sudo docker rm -f openvino
 ```
+
 If installed for this demo:
 ```bash
 sudo snap remove --purge mosquitto
 sudo snap remove --purge grafana
 sudo snap remove --purge docker
 ```
-#### Setup support-scheduler to Scrub old events
+#### Setup support-scheduler to scrub old events
 Start support-scheduler to schedule actions to occur on specific intervals:
 ```bash
 sudo snap start --enable edgexfoundry.support-scheduler
@@ -376,7 +379,7 @@ sudo snap start --enable edgexfoundry.support-scheduler
 The default actions will occur on default intervals (every 24 hours) to scrub old events which stayed in core-data for more than 7 days (604800000000000 nanoseconds).
 
 Add customized interval and action:
-#### 1. Add an interval 
+#### Add an interval 
 Add an interval that runs every 10 minutes:
 ```bash
 curl -X 'POST' \
@@ -392,7 +395,7 @@ curl -X 'POST' \
   }
 ]'
 ```
-#### 2. Add an action 
+#### Add an action 
 Add an action that scrubs old events which stayed in core-data for more than 20 minutes (1,200,000,000,000 nanoseconds):
 ```bash
 curl -X 'POST' \
@@ -416,7 +419,6 @@ curl -X 'POST' \
 ]'
 ```
   
-
 The customized actions will occur on customized intervals (every 10 minutes) to scrub old events which stayed in core-data for more than 20 minutes (1200000000000 nanoseconds).
 
 **[tip]** Make sure the interval and action have been added successfully:
