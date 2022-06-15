@@ -279,7 +279,7 @@ edgex-ekuiper.kuiper-cli create rule filterPeople '
 curl http://localhost:59880/api/v2/reading/device/name/people
 ```
 
-### 7. (Grafana) Visualize OpenVINO predictions
+### 7. (Grafana) Visualize filtered predictions
 We use Grafana to query the filtered results from EdgeX Core Data. We use a Grafana plugin called JSON API ([https://grafana.com/grafana/plugins/marcusolsson-json-datasource/](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/)) to query and pick the needed information.
 
 #### Install
