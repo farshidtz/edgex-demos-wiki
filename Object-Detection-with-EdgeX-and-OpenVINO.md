@@ -226,29 +226,33 @@ Query the above URLs to make sure the changes have been reflected.
 ### 6. (EdgeX) Setup eKuiper
 eKuiper filters prediction results and sends them back to edgex message bus.
 
-Install eKuiper:
+#### Intall
 ```bash
 sudo snap install edgex-ekuiper
 ```
-Configure eKuiper:
+
+### Configure
+
+Edit the edgex source file:
 ```bash
 sudo nano /var/snap/edgex-ekuiper/current/etc/sources/edgex.yaml
 ```
+
 In the default section, change as below:
 
-~~topic: rules-events~~
+Change `topic: rules-events` to `topic: edgex/events/#`
+Add `messageType: request`
 
-topic: edgex/events/#
-
-messageType: request
-		
+Restart:
 ```bash
 sudo snap restart edgex-ekuiper
 ```
+
 Create a stream:
 ```
 edgex-ekuiper.kuiper-cli create stream deviceMqttStream '() WITH (FORMAT="JSON",TYPE="edgex")'
 ```
+
 Create a rule:
 ```
 edgex-ekuiper.kuiper-cli create rule filterPeople '
@@ -269,12 +273,13 @@ edgex-ekuiper.kuiper-cli create rule filterPeople '
     }
   ]
 }'
-
 ```
+
 **[debug]** Query results from EdgeX Core Data:
 ```bash
 curl http://localhost:59880/api/v2/reading/device/name/people
 ```
+
 ### 7. (Grafana) Visualize OpenVINO predictions
 We use Grafana to query the filtered results from EdgeX Core Data. We use a Grafana plugin called JSON API ([https://grafana.com/grafana/plugins/marcusolsson-json-datasource/](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/)) to query and pick the needed information.
 install:
