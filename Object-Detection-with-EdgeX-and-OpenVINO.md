@@ -109,24 +109,27 @@ sudo snap start --enable mosquitto
 ```
 
 ### 4. (OpenVINO) Setup OpenVINO
+#### Run the container
 Install docker, if you don’t already have it:
 ```bash
 sudo snap install docker
 ```
-Run the object detection container:
 
-The DISPLAY environment variable is optional for viewing the predictions as annotations on the video stream. It should open a new window on the host. It may not work and can be omitted safely.
+Run the object detection container:
 
 Let’s try by starting a temporary container in the foreground:
 ```bash
 sudo docker run --network=host -e DISPLAY=$DISPLAY --rm ghcr.io/monicaisher/edgex-openvino-object-detection:latest
 ```
+The DISPLAY environment variable is optional for viewing the predictions as annotations on the video stream. It should open a new window on the host. It may not work and can be omitted safely.
+
 Ctrl+C or closing the real time video window will stop openvino.
 
 If everything worked without error, stop and run again in background (detached), with a restart policy, name, and without the display env variable:
 ```bash
 sudo docker run --network=host --name=openvino --restart=unless-stopped --detach ghcr.io/monicaisher/edgex-openvino-object-detection:latest
 ```
+
 To stop when detached:
 ```bash
 sudo docker stop openvino
@@ -139,27 +142,30 @@ mosquitto_sub -t "openvino/MQTT-test-device/prediction"
 {"objects":[{"detection":{"bounding_box":{"x_max":1.0,"x_min":0.1194220781326294,"y_max":0.9418730139732361,"y_min":0.06846112012863159},"confidence":0.6409656405448914,"label":"dog","label_id":11},"h":210,"roi_type":"dog","w":282,"x":38,"y":16}],"resolution":{"height":240,"width":320},"timestamp":9031881447638}
 ...
 ```
+
 **[debug]** Query core-data to check if raw predictions are being added via Device MQTT:
 ```bash
 curl http://localhost:59880/api/v2/reading/device/name/MQTT-test-device
 ```
 ### 5. (EdgeX) Setup Device MQTT
 
-#### a) Install the device service:
+#### Install
 ```bash
 sudo snap install edgex-device-mqtt
 ```
-#### b) Update configuration.toml with snap option:
+
+#### Configure
+Update configuration.toml with snap option:
 ```bash
 sudo snap set edgex-device-mqtt app-options=true
 sudo snap set edgex-device-mqtt config.mqttbrokerinfo-usetopiclevels=true
 sudo snap set edgex-device-mqtt config.mqttbrokerinfo-incomingtopic=openvino/#
 ```
-#### c) Replace the whole mqtt.test.device.profile.toml:
+
+Replace the whole mqtt.test.device.profile.toml:
 ```bash
 sudo nano /var/snap/edgex-device-mqtt/current/config/device-mqtt/res/profiles/mqtt.test.device.profile.yml
 ```
-  
 ```
 name: "Test-Device-MQTT-Profile"
 manufacturer: "Canonical"
@@ -177,14 +183,17 @@ valueType: "Object"
 readWrite: "R"
 mediaType: "application/json"
 ```
-#### d) Start device-mqtt:
+
+#### Start
 ```bash
 sudo snap start --enable edgex-device-mqtt
 ```
+
 **[debug]** Verify that the right profile has been uploaded:
 ```bash
 curl http://localhost:59881/api/v2/deviceprofile/name/Test-Device-MQTT-Profile
 ```
+
 **[debug]** Check the logs to see if there are errors:
 ```bash
 sudo snap logs -f edgex-device-mqtt
@@ -194,23 +203,29 @@ To see if all messages pass through, enable the debugging first:
 sudo snap set edgex-device-mqtt config.writable-loglevel=DEBUG
 sudo snap restart edgex-device-mqtt
 ```
+
 **[tip]** Need to change the device/device profile after service has started? Update the local files, delete from core-metadata, and restart:
 
 Delete the device:
 ```bash
 curl -X DELETE http://localhost:59881/api/v2/device/name/MQTT-test-device
 ```
+
 Delete the profile, if modified:
 ```bash
 curl -X DELETE http://localhost:59881/api/v2/deviceprofile/name/Test-Device-MQTT-Profile
 ```
+
 Restart:
 ```bash
 sudo snap restart edgex-device-mqtt
 ```
+
 Query the above URLs to make sure the changes have been reflected.
+
 ### 6. (EdgeX) Setup eKuiper
 eKuiper filters prediction results and sends them back to edgex message bus.
+
 Install eKuiper:
 ```bash
 sudo snap install edgex-ekuiper
