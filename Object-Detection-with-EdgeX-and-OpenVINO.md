@@ -14,19 +14,24 @@ Note that tokens will expire if some components are stopped for a period longer 
 ### 2. (EdgeX) Setup Device USB Camera:
 Install:
 ```bash
-sudo snap install edgex-device-usb-camera --channel=latest/edge/pr-30
-connect edgex-device-usb-camera’s edgex-secretstore-token and camera interfaces:
+sudo snap install edgex-device-usb-camera --channel=latest/edge
+```
+
+Connect edgex-device-usb-camera’s edgex-secretstore-token and camera interfaces:
+```bash
 sudo snap connect edgexfoundry:edgex-secretstore-token edgex-device-usb-camera:edgex-secretstore-token
 sudo snap connect edgex-device-usb-camera:camera :camera
 ```
+
 Configure and start:
 ```bash
 sudo mv /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml.example \
 /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml
 ```
+
 **[optional]** 
 Set the right video device (default is /dev/video0);
-We assume that the device name stays as default “example-camera” in the rest of this document:
+We assume that the device name stays as default "example-camera" in the rest of this document:
 ```bash
 sudo nano /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml
 ```
@@ -42,14 +47,14 @@ curl -X PUT -d '{
       "OutputVideoQuality": "31"
     }
 }' http://localhost:59882/api/v2/device/name/example-camera/StartStreaming
-
 ```
+
 **[debug]** The usb camera could be stopped by:
 ```bash
 curl -X PUT -d '{"StopStreaming": true
 }' http://localhost:59882/api/v2/device/name/example-camera/StopStreaming
 ```
-Note that stopping the stream will cause openvino’s container to exit! The container will automatically restart if there is a restart policy, but that may take up to a minute.
+Note that stopping the stream will cause openvino's container to exit! The container will automatically restart if there is a restart policy, but that may take up to a minute.
 
 **[debug]** Check the video stream:
 Test URI with VLC. You would see a video window:
@@ -58,24 +63,29 @@ If you don’t already have it:
 sudo snap install vlc
 vlc rtsp://localhost:8554/stream/example-camera
 ```
+
 If that didn’t work, use mplayer:
 ```bash
 mplayer rtsp://localhost:8554/stream/example-camera
 ```
+
 **[tip]** Need to change the device/device profile after service has started? Update the local files, delete from core-metadata, and restart:
 
 Delete device:
 ```bash
 curl -X DELETE http://localhost:59881/api/v2/device/name/example-camera
 ```
+
 Delete profile, if modified:
 ```bash
 curl -X DELETE http://localhost:59881/api/v2/deviceprofile/name/USB-Camera-General
 ```
+
 Restart:
 ```bash
 sudo snap restart edgex-device-usb-camera
 ```
+
 Query the above URLs to make sure the changes have been reflected.
 
 **[tip]** Turn on device-usb-camera’s auto streaming:
@@ -84,15 +94,18 @@ sudo snap set edgex-device-usb-camera app-options=true
 sudo snap set edgex-device-usb-camera config.devicelist-protocols-usb-autostreaming=true
 sudo snap restart edgex-device-usb-camera.device-usb-camera
 ```
+
 ### 3. (Mosquitto) Setup MQTT Broker
 Install the mosquitto broker, or any other MQTT broker. We use port 1883 for MQTT (without TLS).
 ```bash
 sudo snap install mosquitto
 ```
+
 The broker is started automatically, but just in case you have disabled it:
 ```bash
 sudo snap start --enable mosquitto
 ```
+
 ### 4. (OpenVINO) Setup OpenVINO
 Install docker, if you don’t already have it:
 ```bash
