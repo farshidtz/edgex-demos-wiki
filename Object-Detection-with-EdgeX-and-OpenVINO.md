@@ -12,18 +12,18 @@ sudo snap install edgexfoundry --channel=latest/stable
 Note that tokens will expire if some components are stopped for a period longer than the validity. The restart command in the given instructions can be used to issue a fresh set of tokens.
 
 ### 2. (EdgeX) Setup Device USB Camera:
-Install:
+#### Install:
 ```bash
 sudo snap install edgex-device-usb-camera --channel=latest/edge
 ```
 
-Connect edgex-device-usb-camera’s edgex-secretstore-token and camera interfaces:
+#### Connect edgex-device-usb-camera’s edgex-secretstore-token and camera interfaces:
 ```bash
 sudo snap connect edgexfoundry:edgex-secretstore-token edgex-device-usb-camera:edgex-secretstore-token
 sudo snap connect edgex-device-usb-camera:camera :camera
 ```
 
-Configure and start:
+#### Configure and start:
 ```bash
 sudo mv /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml.example \
 /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res/devices/general.usb.camera.toml
@@ -38,7 +38,8 @@ sudo nano /var/snap/edgex-device-usb-camera/current/config/device-usb-camera/res
 ```bash
 sudo snap start --enable edgex-device-usb-camera
 ```
-Trigger streaming for usb camera:
+
+#### Trigger streaming for usb camera:
 ```bash
 curl -X PUT -d '{
     "StartStreaming": {
