@@ -315,8 +315,9 @@ Set the query range to 5min and refresh rate to 5s
 **[tip]** The range can be shorted by manually entering the from value such as: now-1m
 
 #### Setup the panel
-1. Add an empty panel
-2. Setup query and transformation
+a. Add an empty panel
+
+b. Setup query and transformation:
 -   Field $.readings[:].value, Type Boolean, Alias Person
 -   Field $.readings[:].origin, Type String, Alias Time(ns)
 -   Path: /device/name/people (this gets appended to the server URL set in datasource configuration to construct the core-data reading endpoint as http://localhost:59880/api/v2/reading/device/name/people)
@@ -327,7 +328,7 @@ At this point, we should be able to see data on a table:![](https://lh6.googleus
 
 To visualize time series as line graph, we need to add two transformation:
 
-3. In the Transform tab in the query editor:
+c. In the Transform tab in the query editor:
 -   Select “Add field from calculation”:
 -   Binary operation, Time(ns)/1000000, Alias Time. This converts the time in nanos to seconds
 -   Add transformation -> Select “Convert field type”
@@ -337,7 +338,7 @@ To visualize time series as line graph, we need to add two transformation:
 
 Auto refresh doesn’t work in the query editor, but only on the dashboard. Refresh manually here to see new results.
 
-4. Final touches, configure Graph Style:
+d. Final touches, configure Graph Style:
 -   Fill Opacity: 10
 -   Show Points: Always
 
