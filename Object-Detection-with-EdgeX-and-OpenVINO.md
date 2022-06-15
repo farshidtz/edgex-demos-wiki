@@ -121,7 +121,7 @@ Let’s try by starting a temporary container in the foreground:
 ```bash
 sudo docker run --network=host -e DISPLAY=$DISPLAY --rm ghcr.io/monicaisher/edgex-openvino-object-detection:latest
 ```
-The DISPLAY environment variable is optional for viewing the predictions as annotations on the video stream. It should open a new window on the host. It may not work and can be omitted safely.
+The `DISPLAY` environment variable is optional for viewing the predictions as annotations on the video stream. It should open a new window on the host. It may not work and can be omitted safely.
 
 Ctrl+C or closing the real time video window will stop openvino.
 
@@ -138,7 +138,7 @@ sudo docker stop openvino
 ```bash
 mosquitto_sub -t "openvino/MQTT-test-device/prediction"
 ```
-```bash
+```json
 {"objects":[{"detection":{"bounding_box":{"x_max":1.0,"x_min":0.1194220781326294,"y_max":0.9418730139732361,"y_min":0.06846112012863159},"confidence":0.6409656405448914,"label":"dog","label_id":11},"h":210,"roi_type":"dog","w":282,"x":38,"y":16}],"resolution":{"height":240,"width":320},"timestamp":9031881447638}
 ...
 ```
@@ -166,7 +166,7 @@ Replace the whole mqtt.test.device.profile.toml:
 ```bash
 sudo nano /var/snap/edgex-device-mqtt/current/config/device-mqtt/res/profiles/mqtt.test.device.profile.yml
 ```
-```
+```yaml
 name: "Test-Device-MQTT-Profile"
 manufacturer: "Canonical"
 model: "MQTT-2"
@@ -291,7 +291,7 @@ Open UI: [http://localhost:3000/login](http://localhost:3000/login)
 default username/password: admin, admin
 
 #### Install JSON API Plugin
-Install the [JSON API](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview) plugin via “configuration->plugin”:
+Install the [JSON API](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview) plugin via "configuration->plugin":
 [http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview))
 
 #### Add a datasource
@@ -309,7 +309,7 @@ To do so, go follow: + -> Create / Dashboard
 1. Go to dashboard settings -> JSON Model -> add the content of [grafana-dashboard.json](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/grafana-dashboard.json)
 2. Skip all the next Grafana-related configuration steps.
 
-Set the query range to 5min and refresh rate to 5s
+Set the query range to 5min and refresh rate to `5s`
 ![](https://lh6.googleusercontent.com/a-BNhOU976M4rYAP77F422mI-zFlwUXtaXA2_owywuY4DAg6ggFBrOOAqchc7mSIU9uJ6xH16ljq2dyP6uR-e1uLCeEPkiXKpceITqfEjHdpHraykH3mfGND_m83vL3nR7En4JjC9sn3Vc-tWw)
 
 **[tip]** The range can be shorted by manually entering the from value such as: now-1m
@@ -318,29 +318,29 @@ Set the query range to 5min and refresh rate to 5s
 a. Add an empty panel
 
 b. Setup query and transformation:
--   Field $.readings[:].value, Type Boolean, Alias Person
--   Field $.readings[:].origin, Type String, Alias Time(ns)
--   Path: /device/name/people (this gets appended to the server URL set in datasource configuration to construct the core-data reading endpoint as http://localhost:59880/api/v2/reading/device/name/people)
--   Param key limit, value 1000 (this is the number or readings queried from core-data)
--   Cache time: 0s (otherwise, the datasource won’t query the core-data on refresh)
+-   Field `$.readings[:].value`, Type `Boolean`, Alias `Person`
+-   Field `$.readings[:].origin`, Type `String`, Alias `Time(ns)`
+-   Path: `/device/name/people` (this gets appended to the server URL set in datasource configuration to construct the core-data reading endpoint as `http://localhost:59880/api/v2/reading/device/name/people`)
+-   Param key `limit`, value `1000` (this is the number or readings queried from core-data)
+-   Cache time: `0s` (otherwise, the datasource won’t query the core-data on refresh!)
 
 At this point, we should be able to see data on a table:![](https://lh6.googleusercontent.com/lJ7kAay6PqxfpQ3_8GIVvFX9Ft821aiaFH5ewBZwjOm4htDgZgBZ5FUeEaMYT-UiOZwXj3r2R2-L6jbIDLqdxoLBwGDrph6NWhnZ6OfATIer0nWugGQrHZqv-9_Ydi03umpbMDxVWbngCpZp1A)
 
 To visualize time series as line graph, we need to add two transformation:
 
 c. In the Transform tab in the query editor:
--   Select “Add field from calculation”:
--   Binary operation, Time(ns)/1000000, Alias Time. This converts the time in nanos to seconds
--   Add transformation -> Select “Convert field type”
--   Time as Time. This converts the time from Number to Time format.
+-   Select "Add field from calculation":
+-   Binary operation, `Time(ns)`/`1000000`, Alias `Time`. This converts the time in nanos to seconds
+-   Add transformation -> Select "Convert field type"
+-   `Time` as `Time`. This converts the time from Number to Time format.
 
 ![](https://lh4.googleusercontent.com/lW1e_ZGWg5lXPsL1iASGYdcGCPjVn7dSowcz59qSNXndDnNpq9r48BrFYubUQNl5jRYYkrVFlQEfBr74_vpjE5VVzwGypX-YgLyqVmbnH8anJ4_JMC8aEjRcbIp9mljbEXb68XWTn8oaybdqaQ)
 
 Auto refresh doesn’t work in the query editor, but only on the dashboard. Refresh manually here to see new results.
 
 d. Final touches, configure Graph Style:
--   Fill Opacity: 10
--   Show Points: Always
+-   Fill Opacity: `10`
+-   Show Points: `Always`
 
 Save and go back to the dashboard view. It should auto refresh every 5s as previously configured.
 ![](https://lh3.googleusercontent.com/82600e39fi3ZoSsnIqW0L6qgBw6LGh78ab9QtVH4zIMhKXzz4N5ouZn13_BglP-g_lMq-NWCUWHT2_13Y7HkM0NydCf6hUKWEuuiz4DNTtlGjBHGHiahRoyEn8QI9pLHdAafr60dv5UQnZWpFg)
