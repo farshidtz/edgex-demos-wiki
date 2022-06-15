@@ -357,6 +357,7 @@ You may continue exploring by doing the following:
 -   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided.
 
 ### Cleanup
+#### Remove installed applications
 This will remove everything that this demo uses. Not every removal may be desired!
 ```bash
 sudo snap remove --purge edgexfoundry
@@ -373,6 +374,7 @@ sudo snap remove --purge mosquitto
 sudo snap remove --purge grafana
 sudo snap remove --purge docker
 ```
+
 #### Setup support-scheduler to scrub old events
 Start support-scheduler to schedule actions to occur on specific intervals:
 ```bash
@@ -381,7 +383,9 @@ sudo snap start --enable edgexfoundry.support-scheduler
 The default actions will occur on default intervals (every 24 hours) to scrub old events which stayed in core-data for more than 7 days (604800000000000 nanoseconds).
 
 Add customized interval and action:
-#### Add an interval 
+
+a. Add an interval:
+
 Add an interval that runs every 10 minutes:
 ```bash
 curl -X 'POST' \
@@ -397,7 +401,9 @@ curl -X 'POST' \
   }
 ]'
 ```
-#### Add an action 
+
+b. Add an action:
+
 Add an action that scrubs old events which stayed in core-data for more than 20 minutes (1,200,000,000,000 nanoseconds):
 ```bash
 curl -X 'POST' \
