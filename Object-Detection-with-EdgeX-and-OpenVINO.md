@@ -350,7 +350,7 @@ Congratulations! You now have an object detection toolkit that can visualize the
 
 
 ### 8. (EdgeX) Setup support-scheduler to scrub old events
-If you intent to run this demo for more than an hour, it is best to setup EdgeX's support-scheduler to remove the old events. Otherwise, the database will be populated with thousands of events and eventually slow down.
+If you intent to run this demo for more than an hour, it is best to setup EdgeX's support-scheduler to remove the old events. Otherwise, the database (EdgeX core-data) will be populated with a large number of events and eventually slow down.
 
 Start support-scheduler to schedule actions to occur on specific intervals:
 ```bash
@@ -437,6 +437,7 @@ sudo snap remove --purge grafana
 sudo snap remove --purge docker
 ```
 
-### Appendix
-#### Docker image source
-[https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection](https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection)
+### References
+* [Demo source code](https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection)
+* [EdgeX documentation](https://docs.edgexfoundry.org/)
+* [Getting started with EdgeX snaps](https://docs.edgexfoundry.org/2.2/getting-started/Ch-GettingStartedSnapUsers/)
