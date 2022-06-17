@@ -18,7 +18,7 @@ sudo snap install edgex-device-usb-camera --channel=latest/edge
 ```
 
 #### Connect interfaces
-Connect edgex-device-usb-camera’s edgex-secretstore-token and camera interfaces:
+Connect edgex-device-usb-camera’s camera interface:
 ```bash
 sudo snap connect edgex-device-usb-camera:camera :camera
 ```
