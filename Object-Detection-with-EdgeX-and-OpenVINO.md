@@ -77,21 +77,17 @@ mplayer rtsp://localhost:8554/stream/example-camera
 
 **[tip]** Need to change the device/device profile after service has started? Update the local files, delete from core-metadata, and restart:
 
-Delete device:
+
 ```bash
+# Delete device:
 curl -X DELETE http://localhost:59881/api/v2/device/name/example-camera
-```
 
-Delete profile, if modified:
-```bash
+# Delete profile, if modified:
 curl -X DELETE http://localhost:59881/api/v2/deviceprofile/name/USB-Camera-General
-```
 
-Restart:
-```bash
+# Restart:
 sudo snap restart edgex-device-usb-camera
 ```
-
 Query the above URLs to make sure the changes have been reflected.
 
 **[tip]** Turn on device-usb-camera’s auto streaming:
