@@ -109,6 +109,12 @@ sudo snap start --enable mosquitto
 ```
 
 ### 4. (OpenVINO) Setup OpenVINO
+edgex-openvino-object-detection docker image we used in this demo consists of four main components:
+- [OpenVINO™ toolkit Model Downloader](https://docs.openvino.ai/latest/omz_tools_downloader.html)
+- [OpenVINO™ toolkit Model Optimizer](https://docs.openvino.ai/latest/openvino_docs_MO_DG_Deep_Learning_Model_Optimizer_DevGuide.html)
+- [Intel® Deep Learning Streamer](https://dlstreamer.github.io/)
+- [yolo-v2-tiny-ava-0001 Object Detection Models](https://docs.openvino.ai/latest/omz_models_model_yolo_v2_tiny_ava_0001.html)
+
 #### Run the container
 Install docker, if you don’t already have it:
 ```bash
