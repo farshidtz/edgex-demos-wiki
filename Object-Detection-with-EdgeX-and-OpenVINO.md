@@ -119,8 +119,10 @@ edgex-openvino-object-detection docker image we used in this demo consists of fo
 - [Intel® Deep Learning Streamer](https://dlstreamer.github.io/)
 - [yolo-v2-tiny-ava-0001 Object Detection Models](https://docs.openvino.ai/latest/omz_models_model_yolo_v2_tiny_ava_0001.html)
 
-#### Build custom Docker image
+#### Build the Docker image
 Please follow this [guide](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/README.md#build-custom-edgex-openvino-object-detection-docker-image) to get more information.
+
+For the next step, we have built and uploaded the image to Github's container registry. The image name is `ghcr.io/monicaisher/edgex-openvino-object-detection`.
 
 #### Run the container
 Install docker, if you don’t already have it:
