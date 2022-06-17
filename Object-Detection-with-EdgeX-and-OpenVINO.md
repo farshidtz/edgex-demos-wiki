@@ -45,10 +45,15 @@ curl -X PUT -d '{
     "StartStreaming": {
       "OutputFps": "5",
       "InputImageSize": "320x240",
-      "OutputVideoQuality": "31"
+      "OutputVideoQuality": "15"
     }
 }' http://localhost:59882/api/v2/device/name/example-camera/StartStreaming
 ```
+- `OutputFps`: Duplicate or drop input frames to achieve constant output frame rate fps. 
+- `OutputImageSize`: Performs image rescaling. The format is `wxh`, for example, "640x480". 
+- `OutputVideoQuality`: Use a fixed video quality level. The range is an integer number between 1 to 31, with 31 being the worst quality. 
+
+Please have a look at [edgex-device-usb-camera](https://github.com/edgexfoundry/device-usb-camera#advanced-topics) for more video options.
 
 **[debug]** The usb camera could be stopped by:
 ```bash
