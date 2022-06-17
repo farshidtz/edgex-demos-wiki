@@ -429,7 +429,8 @@ You may continue exploring by doing the following:
 -   Alternatively, use Grafana to trigger alarm notifications
 -   Use [support-notifications](https://snapcraft.io/edgexfoundry) and [device-rest service](https://snapcraft.io/edgex-device-rest) to trigger a physical alarm whenever a person has been detected
 -   Start and configure support-scheduler to periodically remove the old data. Please see [Setup support-scheduler to Scrub old events](https://github.com/canonical/edgex-demos/wiki/Object-Detection-with-EdgeX-and-OpenVINO/#setup-support-scheduler-to-scrub-old-events) section below
--   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided.
+-   Stream output to the RTSP server to allow remote access to video stream with annotations. For now, there will be no output when the DISPLAY environment isn’t provided
+-   Use [yolo-v2-tf](https://docs.openvino.ai/latest/omz_models_model_yolo_v2_tf.html) object detection model with higher accuracy
 
 ### Cleanup
 This will remove everything that this demo uses. Not every removal may be desired!
