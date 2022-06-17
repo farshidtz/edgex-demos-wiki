@@ -120,9 +120,10 @@ edgex-openvino-object-detection docker image we used in this demo consists of fo
 - [yolo-v2-tiny-ava-0001 Object Detection Models](https://docs.openvino.ai/latest/omz_models_model_yolo_v2_tiny_ava_0001.html)
 
 #### Build the Docker image
-Please follow this [guide](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/README.md#build-custom-edgex-openvino-object-detection-docker-image) to get more information.
+Please follow [these instructions](https://github.com/canonical/edgex-demos/blob/main/openvino-object-detection/README.md#build-custom-edgex-openvino-object-detection-docker-image) to build the image.
 
-For the next step, we have built and uploaded the image to Github's container registry. The image name is `ghcr.io/monicaisher/edgex-openvino-object-detection`.
+In the next step, we use the locally built image, called: `edgex-openvino-object-detection`
+Alternatively, you can upload this image to a docker registry and use it on another machine.
 
 #### Run the container
 Install docker, if you don’t already have it:
@@ -134,7 +135,7 @@ Run the object detection container:
 
 Let’s try by starting a temporary container in the foreground:
 ```bash
-sudo docker run --network=host -e DISPLAY=$DISPLAY --rm ghcr.io/monicaisher/edgex-openvino-object-detection:latest
+sudo docker run --network=host -e DISPLAY=$DISPLAY --rm edgex-openvino-object-detection
 ```
 The `DISPLAY` environment variable is optional for viewing the predictions as annotations on the video stream. It should open a new window on the host. It may not work and can be omitted safely.
 
@@ -142,7 +143,7 @@ Ctrl+C or closing the real time video window will stop openvino.
 
 If everything worked without error, stop and run again in background (detached), with a restart policy, name, and without the display env variable:
 ```bash
-sudo docker run --network=host --name=openvino --restart=unless-stopped --detach ghcr.io/monicaisher/edgex-openvino-object-detection:latest
+sudo docker run --network=host --name=openvino --restart=unless-stopped --detach edgex-openvino-object-detection
 ```
 
 To stop when detached:
