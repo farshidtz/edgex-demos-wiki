@@ -1,1 +1,1 @@
-© Copyright 2022, Canonical team
+© Copyright 2022, Canonical Ltd
