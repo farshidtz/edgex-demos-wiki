@@ -446,6 +446,9 @@ sudo snap remove --purge docker
 ```
 
 ### References
-* [Demo source code](https://github.com/canonical/edgex-demos/tree/main/edgex-openvino-object-detection)
+* [Demo source code](https://github.com/canonical/edgex-demos/tree/main/openvino-object-detection)
 * [EdgeX documentation](https://docs.edgexfoundry.org/)
 * [Getting started with EdgeX snaps](https://docs.edgexfoundry.org/2.2/getting-started/Ch-GettingStartedSnapUsers/)
+* [OpenVINO Docker image](https://hub.docker.com/r/openvino/ubuntu18_data_dev)
+* [OpenVINO™ toolkit documentation](https://docs.openvino.ai/latest/documentation.html)
+* [Intel® Deep Learning Streamer documentation](https://dlstreamer.github.io/)
