@@ -11,7 +11,7 @@ sudo snap install edgexfoundry --channel=latest/stable
 **[tip]** [Extend the default secret store tokens TTL](https://docs.edgexfoundry.org/2.2/getting-started/Ch-GettingStartedSnapUsers/#secret-store-token) from 1h to 72h to avoid running into expired tokens while preparing the demo.
 Note that tokens will expire if some components are stopped for a period longer than the validity. The restart command in the given instructions can be used to issue a fresh set of tokens.
 
-### 2. (EdgeX) Setup Device USB Camera:
+### 2. (EdgeX) Setup Device USB Camera
 #### Install
 ```bash
 sudo snap install edgex-device-usb-camera --channel=latest/edge
@@ -55,7 +55,7 @@ curl -X PUT -d '{
 
 Please have a look at [edgex-device-usb-camera](https://github.com/edgexfoundry/device-usb-camera#advanced-topics) for more video options.
 
-**[debug]** The usb camera could be stopped by:
+**[tip]** The usb camera could be stopped by:
 ```bash
 curl -X PUT -d '{"StopStreaming": true
 }' http://localhost:59882/api/v2/device/name/example-camera/StopStreaming
