@@ -16,7 +16,7 @@ We use the following:
 
 To interact with the APIs, we use the [HTTPie HTTP Client](https://snapcraft.io/httpie) which provides the `http` command. It is easy to use, prints pretty JSON output, and is available as a Snap! You can use any other HTTP client.
 
-1. Install the platform
+## Installing the EdgeX platform
 
 The [EdgeX platform snap](https://snapcraft.io/edgexfoundry), called `edgexfoundry`, contains the core and several other components. To install the latest stable:
 ```bash
@@ -33,7 +33,7 @@ sudo snap set edgexfoundry apps.security-secretstore-setup.config.tokenfileprovi
 sudo snap restart edgexfoundry.security-secretstore-setup
 ```
 
-2. Sensing input
+## Setting up sensing input
 
 We assume that sensors have been setup and the measurements for temperature and humidity are published to an MQTT broker at an interval. Setting up sensors and publishing their data to the broker is beyond the scope of this demo. 
 
@@ -55,7 +55,7 @@ pluto/dht22/humidity 49.5
 
 The topics have `.../<device>/<resource>` format. The payloads are the raw measurements, without any envelop object. That's exactly how we want them to be!
 
-3. Setup device mqtt (install, configure)
+## Setting up the EdgeX MQTT service
 
 Install the [EdgeX Device MQTT](https://snapcraft.io/edgex-device-mqtt) service:
 ```bash
@@ -70,12 +70,12 @@ cd /var/snap/edgex-device-mqtt/current/config/device-mqtt/res
 ```
 All following commands are relative to this path, so make sure you don't change directory.
 
-Remove the default profile and device so that they aren't loaded:
+Remove the default profile and device so that they aren't loaded by the service:
 ```bash
 sudo rm profiles/mqtt.test.device.profile.yml
 sudo rm devices/mqtt.test.device.toml
 ```
-Don't worry about backing up. Those files are still available as read-only under `/snap/edgex-device-mqtt/current/config/device-mqtt/res/`.
+Those files are still available as read-only under `/snap/edgex-device-mqtt/current/config/device-mqtt/res/`.
 
 Add `profiles/temperature-humidity-sensor.yml`:
 ```yml
@@ -144,10 +144,8 @@ sudo snap start edgex-device-mqtt
 > sudo snap restart edgex-device-usb-camera
 > ```
 
-4. Query core data
-Let's query EdgeX Core Data to check if measurements (readings) are being added via Device MQTT. We use the `readings` endpoint:
-
-Using HTTPie client:
+## Querying store data from EdgeX
+Let's query EdgeX Core Data to check if measurements (readings) are being added via Device MQTT. We use the `readings` endpoint and query just 2 records:
 ```bash
 http http://localhost:59880/api/v2/reading/device/name/dht22?limit=2
 ```
@@ -185,10 +183,14 @@ X-Correlation-Id: a94fadad-ad47-46de-bcb6-b4c2da56e7ab
 }
 ```
 
+## Visualizing sensor data with Grafana
+Using pre-setup dashboard
 
-5. Show Grafana (pre-setup dashboard)
+## Creating an OS image with all the above
+Well, except for the sensing part.
 
-6. UC Model assertion for the above and a config provider
-     - Show config provider for device-mqtt
-     - Show model assertion
-     - Build image
+To add:
+- UC Model assertion for the above and a config provider
+  - Show config provider for device-mqtt
+  - Show model assertion
+  - Build image
