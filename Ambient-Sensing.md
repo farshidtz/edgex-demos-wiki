@@ -38,8 +38,16 @@ sudo snap restart edgexfoundry.security-secretstore-setup
 We assume that sensors have been setup and the measurements for temperature and humidity are published to an MQTT broker at an interval. Setting up sensors and publishing their data to the broker is beyond the scope of this demo. 
 
 We use the following:
-- [Mosquitto](https://snapcraft.io/mosquitto) MQTT broker
-- [DHT-MQTT](https://github.com/farshidtz/dht-mqtt) for reading data DHT11/DHT22 sensors on a Raspberry Pi and publishing to the broker
+- [Mosquitto](https://snapcraft.io/mosquitto) MQTT broker on `jupiter.local`
+- [DHT-MQTT](https://github.com/farshidtz/dht-mqtt) for reading data DHT11/DHT22 sensors on `pluto.local` and publishing to the broker. The configuration is as follows:
+```bash
+MQTT_BROKER=jupiter.local
+MQTT_BROKER_PORT=1883
+MQTT_TOPIC_PREFIX=pi/pluto/pluto-dht22
+MQTT_CLIENT_ID_PREFIX=pluto
+PIN=4
+SENSOR=DHT22
+```
 
 Let's subscribe to the broker to verify the flow of sensing data:
 ```bash
@@ -53,7 +61,7 @@ pi/pluto/pluto-dht22/humidity 40.6
 ...
 ```
 
-The topics have `../<device>/<resource>` format; we only care about the last two parts. The payloads are the raw measurements, without any envelop object.
+The topics have `../<device>/<resource>` format; we only care about the last two parts to map measurements to the EdgeX device and resource setup in the next step. The payloads are the raw measurements, without any envelop object.
 
 ## Setting up the EdgeX MQTT service
 
