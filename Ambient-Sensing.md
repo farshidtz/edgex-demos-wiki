@@ -178,7 +178,64 @@ http http://localhost:59880/api/v2/reading/device/name/pluto-dht22?limit=2 --bod
 ```
 
 ## Visualizing sensor data with Grafana
-Using pre-setup dashboard
+We use Grafana to query the readings from EdgeX Core Data. We use a Grafana plugin called [JSON API](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/)to query and pick the needed information.
+
+#### Install
+```bash
+sudo snap install grafana --channel=rock/edge
+sudo snap start --enable grafana
+```
+Open UI: http://jupiter.local:3000
+
+Default username/password: admin/admin
+
+#### Install JSON API Plugin
+Install the [JSON API](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview) plugin via "configuration->plugin":
+[http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview](http://localhost:3000/plugins/marcusolsson-json-datasource?page=overview))
+
+#### Add a datasource
+Select JSON API and set the following parameters:
+* name: core-data  
+* URL: http://localhost:59880/api/v2/reading
+
+Save and test. You should see Not Found as follows, meaning that the server was set correctly but there is no resource at the given URL. To resolve this, we will later on set the HTTP path in the query editor.
+
+
+#### Create a dashboard
+To do so, go follow: + -> Create / Dashboard
+
+Set the query refresh rate to `5s`
+
+> ℹ **Tip**  
+> The range can be shorted by manually entering the from value such as: now-1m
+
+#### Setup the panel
+a. Add an empty panel. Set the title to Temperature.
+
+b. Setup query and transformation:
+-   Name `Pluto`
+-   Field `$.readings[:].value`, Type `Boolean`, Alias `Value`
+-   Field `$.readings[:].origin`, Type `String`, Alias `Time(ns)`
+-   Path: `/device/name/pluto-dht22/resourceName/temperature` (this gets appended to the server URL set in datasource configuration to construct the core-data reading endpoint as `http://localhost:59880/api/v2/reading/device/name/pluto-dht22/resourceName/temperature`)
+-   Param key `limit`, value `100` (this is the number or readings queried from core-data)
+-   Cache time: `0s` (otherwise, the datasource won’t query the core-data on refresh!)
+
+At this point, we should be able to see data on a table.
+
+To visualize time series as line graph, we need to add two transformation:
+
+c. In the Transform tab in the query editor:
+-   Select "Add field from calculation":
+-   Binary operation, `Time(ns)`/`1000000`, Alias `Time`. This converts the time in nanos to seconds
+-   Add transformation -> Select "Convert field type"
+-   `Time` as `Time`. This converts the time from Number to Time format.
+
+
+Auto refresh doesn’t work in the query editor, but only on the dashboard. Refresh manually here to see new results.
+
+Save and go back to the dashboard view. It should auto refresh every 5s as previously configured.
+
+Setup a panel for humidity by cloning the Temperature panel and changing the relevant fields.
 
 ## Creating an OS image with all the above
 Well, except for the sensing part.
