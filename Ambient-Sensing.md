@@ -1,10 +1,24 @@
 ## Overview
 
-The demo involves setting up EdgeX to collect ambient sensing measurements from an MQTT broker.
+The demo involves setting up EdgeX to collect ambient sensing measurements from an MQTT broker. It will showcase the following aspects of EdgeX:
+- Deployment using Snaps, allowing automatic updates out of the box
+- Devices (sensors) and their resources (sensor measurement classes) added to EdgeX's Metadata store
+- Sensor measurements ingested into EdgeX, for storage and further processing
+
+Required hardware:
+- Raspberry Pi 4 or another arm64/amd64 computer
+- DHT22/DHT11 temperature and humidity sensor modules
+
+We use the following:
+- Raspberry Pi 4 running arm64 Ubuntu Core (hostname: `jupiter.local`)
+- Raspberry Pi Zero W running armhf Raspberry Pi OS (hostname: `pluto.local`)
+- DHT22 sensor connected to the Raspberry Pi Zero W
+
+To interact with the APIs, we use the [HTTPie HTTP Client](https://snapcraft.io/httpie) which provides the `http` command. It is easy to use, prints pretty JSON output, and is available as a Snap! You can use any other HTTP client.
 
 1. Install the platform
 
-The [platform snap](https://snapcraft.io/edgexfoundry), called `edgexfoundry`, contains the core and several other components. To install the latest stable:
+The [EdgeX platform snap](https://snapcraft.io/edgexfoundry), called `edgexfoundry`, contains the core and several other components. To install the latest stable:
 ```bash
 sudo snap install edgexfoundry
 ```
@@ -28,8 +42,10 @@ We use the following:
 - [DHT-MQTT](https://github.com/farshidtz/dht-mqtt) for reading data DHT11/DHT22 sensors on a Raspberry Pi and publishing to the broker
 
 Let's subscribe to the broker to verify the flow of sensing data:
+```bash
+mosquitto_sub -h jupiter.local -t "#" -v
 ```
-$ mosquitto_sub -h 192.168.0.129 -t "#" -v
+```
 pluto/dht22/temperature 26.0
 pluto/dht22/humidity 49.2
 pluto/dht22/temperature 26.0
@@ -37,7 +53,7 @@ pluto/dht22/humidity 49.5
 ...
 ```
 
-The topics are `pluto/dht22/temperature` and `pluto/dht22/humidity`. The payloads are the raw measurements, without any envelop object. That's exactly how we want them to be!
+The topics have `.../<device>/<resource>` format. The payloads are the raw measurements, without any envelop object. That's exactly how we want them to be!
 
 3. Setup device mqtt (install, configure)
 
@@ -103,7 +119,7 @@ With the configurations in place, we can now start the service:
 sudo snap start edgex-device-mqtt
 ```
 
-> **Debug**  
+> 🛑 **Debug**  
 > Check the logs to see if there are errors:
 > ```bash
 > sudo snap logs -f edgex-device-mqtt
@@ -114,21 +130,62 @@ sudo snap start edgex-device-mqtt
 > sudo snap restart edgex-device-mqtt
 > ```
 
-> **Tip**  
+> ℹ **Tip**  
 > To change the device/device profile after service has started: Update the local files, then delete the device/profile from core-metadata, and restart as below:
 >
 > ```bash
 > # Delete device:
-> curl -X DELETE http://localhost:59881/api/v2/device/name/example-camera
+> http DELETE http://localhost:59881/api/v2/device/name/example-camera
 >
 > # Delete profile, if modified:
-> curl -X DELETE http://localhost:59881/api/v2/deviceprofile/name/USB-Camera-General
+> http DELETE http://localhost:59881/api/v2/deviceprofile/name/USB-Camera-General
 >
 > # Restart:
 > sudo snap restart edgex-device-usb-camera
 > ```
 
 4. Query core data
+Let's query EdgeX Core Data to check if measurements (readings) are being added via Device MQTT. We use the `readings` endpoint:
+
+Using HTTPie client:
+```bash
+http http://localhost:59880/api/v2/reading/device/name/dht22?limit=2
+```
+```
+HTTP/1.1 200 OK
+Content-Length: 494
+Content-Type: application/json
+Date: Tue, 21 Jun 2022 06:55:36 GMT
+X-Correlation-Id: a94fadad-ad47-46de-bcb6-b4c2da56e7ab
+
+{
+    "apiVersion": "v2",
+    "readings": [
+        {
+            "deviceName": "dht22",
+            "id": "7601bcfe-0ef2-4480-a2c9-812f7b97e11c",
+            "origin": 1655794520619530651,
+            "profileName": "temperature-humidity-sensor",
+            "resourceName": "humidity",
+            "value": "5.050000e+01",
+            "valueType": "Float32"
+        },
+        {
+            "deviceName": "dht22",
+            "id": "1db797f6-27b6-48f5-bae2-8265d204baf6",
+            "origin": 1655794520617060775,
+            "profileName": "temperature-humidity-sensor",
+            "resourceName": "temperature",
+            "value": "2.560000e+01",
+            "valueType": "Float32"
+        }
+    ],
+    "statusCode": 200,
+    "totalCount": 97781 <-- This thing has been running for a while!
+}
+```
+
+
 5. Show Grafana (pre-setup dashboard)
 
 6. UC Model assertion for the above and a config provider
