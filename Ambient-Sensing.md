@@ -46,14 +46,14 @@ Let's subscribe to the broker to verify the flow of sensing data:
 mosquitto_sub -h jupiter.local -t "#" -v
 ```
 ```
-pluto/dht22/temperature 26.0
-pluto/dht22/humidity 49.2
-pluto/dht22/temperature 26.0
-pluto/dht22/humidity 49.5
+pi/pluto/pluto-dht22/temperature 25.3
+pi/pluto/pluto-dht22/humidity 40.4
+pi/pluto/pluto-dht22/temperature 25.3
+pi/pluto/pluto-dht22/humidity 40.6
 ...
 ```
 
-The topics have `.../<device>/<resource>` format. The payloads are the raw measurements, without any envelop object. That's exactly how we want them to be!
+The topics have `../<device>/<resource>` format; we only care about the last two parts. The payloads are the raw measurements, without any envelop object.
 
 ## Setting up the EdgeX MQTT service
 
@@ -94,7 +94,7 @@ deviceResources:
 Add `devices/dht22.toml`:
 ```toml
 [[DeviceList]]
-  Name = "dht22"
+  Name = "pluto-dht22"
   ProfileName = "temperature-humidity-sensor"
   [DeviceList.Protocols]
     [DeviceList.Protocols.mqtt]
@@ -105,13 +105,13 @@ Update `configuration.toml` with snap option:
 ```bash
 sudo snap set edgex-device-mqtt app-options=true
 sudo snap set edgex-device-mqtt config.mqttbrokerinfo-usetopiclevels=true
-sudo snap set edgex-device-mqtt config.mqttbrokerinfo-incomingtopic=pluto/#
+sudo snap set edgex-device-mqtt config.mqttbrokerinfo-incomingtopic=pi/pluto/#
 ```
 
 This is equivalent to updating the following entries in the config file before service has started for the first time:
 ```toml
 UseTopicLevels = true
-IncomingTopic = "pluto/#"
+IncomingTopic = "pi/pluto/#"
 ```
 
 With the configurations in place, we can now start the service:
@@ -135,43 +135,37 @@ sudo snap start edgex-device-mqtt
 >
 > ```bash
 > # Delete device:
-> http DELETE http://localhost:59881/api/v2/device/name/example-camera
+> http DELETE http://localhost:59881/api/v2/device/name/pluto-dht22
 >
 > # Delete profile, if modified:
-> http DELETE http://localhost:59881/api/v2/deviceprofile/name/USB-Camera-General
+> http DELETE http://localhost:59881/api/v2/deviceprofile/name/temperature-humidity-sensor
 >
 > # Restart:
 > sudo snap restart edgex-device-usb-camera
 > ```
 
-## Querying store data from EdgeX
+## Querying stored data from EdgeX
 Let's query EdgeX Core Data to check if measurements (readings) are being added via Device MQTT. We use the `readings` endpoint and query just 2 records:
 ```bash
-http http://localhost:59880/api/v2/reading/device/name/dht22?limit=2
+http http://localhost:59880/api/v2/reading/device/name/pluto-dht22?limit=2 --body
 ```
-```
-HTTP/1.1 200 OK
-Content-Length: 494
-Content-Type: application/json
-Date: Tue, 21 Jun 2022 06:55:36 GMT
-X-Correlation-Id: a94fadad-ad47-46de-bcb6-b4c2da56e7ab
-
+```json
 {
     "apiVersion": "v2",
     "readings": [
         {
-            "deviceName": "dht22",
-            "id": "7601bcfe-0ef2-4480-a2c9-812f7b97e11c",
-            "origin": 1655794520619530651,
+            "deviceName": "pluto-dht22",
+            "id": "94e2fbf8-4da5-403b-97a0-6b9cd7fab00e",
+            "origin": 1655806229236796266,
             "profileName": "temperature-humidity-sensor",
             "resourceName": "humidity",
-            "value": "5.050000e+01",
+            "value": "4.120000e+01",
             "valueType": "Float32"
         },
         {
-            "deviceName": "dht22",
-            "id": "1db797f6-27b6-48f5-bae2-8265d204baf6",
-            "origin": 1655794520617060775,
+            "deviceName": "pluto-dht22",
+            "id": "b5588876-cef9-4fde-bf29-87ab0a92f187",
+            "origin": 1655806229234657153,
             "profileName": "temperature-humidity-sensor",
             "resourceName": "temperature",
             "value": "2.560000e+01",
@@ -179,7 +173,7 @@ X-Correlation-Id: a94fadad-ad47-46de-bcb6-b4c2da56e7ab
         }
     ],
     "statusCode": 200,
-    "totalCount": 97781 <-- This thing has been running for a while!
+    "totalCount": 16
 }
 ```
 
