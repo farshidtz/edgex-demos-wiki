@@ -149,7 +149,7 @@ sudo snap start edgex-device-mqtt
 > http DELETE http://localhost:59881/api/v2/deviceprofile/name/temperature-humidity-sensor
 >
 > # Restart:
-> sudo snap restart edgex-device-usb-camera
+> sudo snap restart edgex-device-mqtt
 > ```
 
 ## Querying stored data from EdgeX
