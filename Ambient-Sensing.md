@@ -253,3 +253,133 @@ To add:
   - Show config provider for device-mqtt
   - Show model assertion
   - Build image
+
+### Create an Ubuntu Core model assertion
+Refer to the following article for details on how to sign the model assertion:
+https://ubuntu.com/core/docs/custom-images#heading--signing
+
+1. Create and register a key if you don’t already have one:
+```bash
+snap login
+snap keys
+# continue if you have no existing keys
+# you’ll be asked to set a passphrase which is needed before signing
+snap create-key edgex-demo
+snapcraft register-key
+```
+
+
+2. Now, create the model assertion. 
+Get familiar with model assertion: https://ubuntu.com/core/docs/reference/assertions/model
+
+Unlike the official documentation which uses JSON, we use YAML serialization for the model. This is for consistency with all the other serialization formats in this tutorial. Moreover, it allows us to comment out some parts or add comments to describe the details inline.
+
+- [ ] add link to `model.yaml` in repo
+
+> ℹ **Tip**  
+> Find your developer ID:
+> ```
+> $ snapcraft whoami
+> email:        farshid.tavakolizadeh@canonical.com
+> developer-id: SZ4OfFv8DVM9om64iYrgojDLgbzI0eiL
+> 
+> Or from https://dashboard.snapcraft.io.
+> ```
+
+3. Sign the model
+We sign the model using the “edgex-demo” key created and registered earlier. 
+
+The snap sign command takes JSON as input and produces YAML as output! We use yq to convert our model assertion to JSON before passing it in for signing.
+
+```bash
+# if you don’t already have it
+sudo snap install yq
+
+# sign
+yq eval model.yaml -o=json | snap sign -k edgex-demo > model.signed.yaml
+
+# check
+cat model.signed.yaml
+```
+
+Note: You need to repeat the signing every time you change the input model, because the signature is applied to a copy of the model.
+
+Refer to the one of following to do so:
+- Ubuntu Startup Disk Creator: https://ubuntu.com/tutorials/create-a-usb-stick-on-ubuntu
+- Raspberry Pi Imager: https://www.raspberrypi.com/software/
+- `dd` command: https://ubuntu.com/download/iot/installation-media
+
+### Setup defaults using a Gadget snap
+Setting up default snap options and connection is possible via a Gadget snap.
+
+Use one of the following as basis:
+- https://github.com/snapcore/pc-amd64-gadget for amd64 computers. This is what we'll use for the remaining steps.
+- https://github.com/snapcore/pi-gadget for Raspberry Pi
+
+Add the following to `gadget.yml`:
+```yml
+# Add default config options
+defaults:
+  # edgex-device-mqtt
+  AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX:
+    autostart: true
+
+connections:
+   -  plug: AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX:device-config
+      slot: 5riI41SdX1gJYFdFXC5eoKzzBUEzSgqq:device-config
+```
+
+Build:
+```bash
+$ snapcraft
+...
+Snapped pc_20-0.4_amd64.snap
+```
+
+Note: You need to rebuild the snap every time you change the gadget.yaml file.
+
+### Build the Ubuntu Core image
+We use ubuntu-image and set the following:
+- Path to signed model assertion YAML file
+- Path to gadget snap that we built in the previous steps
+
+```bash
+# install if you don’t already have it
+$ sudo snap install ubuntu-image --beta --classic
+
+# build the image
+$ ubuntu-image snap edgex-model-signed.yaml --validation=enforce --snap pc_20-0.4_amd64.snap
+Fetching pc-kernel
+Fetching core20
+Fetching edgexfoundry
+...
+WARNING: "pc" installed from local snaps disconnected from a store cannot be refreshed subsequently!
+Copying "pc_20-0.4_amd64.snap" (pc)
+
+# check the image file
+$ file pc.img
+pc.img: DOS/MBR boot sector, extended partition table (last)
+```
+
+**The image file is now ready to be flashed on a medium to create a bootable drive with the needed applications and configuration!**
+
+### Run in an emulator
+x86 emulator - for amd64 gadget and image
+- https://ubuntu.com/core/docs/testing-with-qemu
+- https://ubuntu.com/core/docs/image-building#heading--testing
+
+Run the following command and wait for the boot to complete:
+```bash
+sudo qemu-system-x86_64 -smp 4 -m 4096  -net nic,model=virtio -net user,hostfwd=tcp::8022-:22  -drive file=/usr/share/OVMF/OVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on  -drive file=pc.img,cache=none,format=raw,id=disk1,if=none  -device virtio-blk-pci,drive=disk1,bootindex=1 -machine accel=kvm -serial mon:stdio -vga virtio
+```
+The above command forwards the port 22 of the emulator to 8022 on the host. Refer to the above references on how to SSH.
+
+To forward additional ports, add more: hostfwd=tcp::PORT_ON_HOST-:PORT_IN_EMULATOR values to -net.
+
+Once the boot is complete, it will prompt for your email address to deploy your public key. This manual step can be avoided by pre-loading the image with user data.
+
+Connect to it via SSH
+```bash
+ssh <user>@localhost -p 8022
+```
+
