@@ -246,13 +246,25 @@ Save and go back to the dashboard view. It should auto refresh every 5s as previ
 Setup a panel for humidity by cloning the Temperature panel and changing the relevant fields.
 
 ## Creating an OS image with all the above
-Well, except for the sensing part.
+Now, let's create an OS image that includes all the above (except for the sensing part) and can be easily flashed on storage medium to create a bootable drive. This will make it very easy to onboard gateway devices pre-loaded with the EdgeX stack!
 
-To add:
-- UC Model assertion for the above and a config provider
-  - Show config provider for device-mqtt
-  - Show model assertion
-  - Build image
+### Create a config provider for device-mqtt
+The EdgeX Device MQTT service cannot be fully configured using environment variables / snap options. Because of that, we need to package the modified config files and replace the defaults.
+
+Since we want to create an OS image pre-loaded with the configured system, we need to make sure the configurations are there without any manual user interaction. We do that by creating a snap which provides the configuration files prepared in the previous steps to the Device MQTT snap:
+- configuration.toml
+- devices/dht22.toml
+- profiles/temperature-humidity-sensor.yml
+
+This snap should be build and uploaded to the store. We use `edgex-demo-ambient-sensing-config` as the snap name. 
+
+- [ ] The source code is available at TBA
+
+Build and upload (release to `latest/edge` channel):
+```
+snapcraft
+snapcraft upload --release=latest/edge ./edgex-demo-ambient-sensing-config_demo_amd64.snap
+```
 
 ### Create an Ubuntu Core model assertion
 Refer to the following article for details on how to sign the model assertion:
