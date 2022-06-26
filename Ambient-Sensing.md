@@ -270,7 +270,7 @@ snapcraft upload --release=latest/edge ./edgex-demo-ambient-sensing-config_demo_
 Refer to the following article for details on how to sign the model assertion:
 https://ubuntu.com/core/docs/custom-images#heading--signing
 
-1. Create and register a key if you don’t already have one:
+1. Create and register a key if you don't already have one:
 ```bash
 snap login
 snap keys
@@ -286,7 +286,61 @@ Get familiar with model assertion: https://ubuntu.com/core/docs/reference/assert
 
 Unlike the official documentation which uses JSON, we use YAML serialization for the model. This is for consistency with all the other serialization formats in this tutorial. Moreover, it allows us to comment out some parts or add comments to describe the details inline.
 
-- [ ] add link to `model.yaml` in repo
+Create `model.yaml` with the following content:
+```yaml
+type: model
+series: '16'
+
+# authority-id and brand-id must be set to your developer-id
+authority-id: SZ4OfFv8DVM9om64iYrgojDLgbzI0eiL
+brand-id: SZ4OfFv8DVM9om64iYrgojDLgbzI0eiL
+
+model: ubuntu-core-20-amd64
+architecture: amd64
+
+# timestamp should be within your signature’s validity period
+timestamp: '2022-06-21T10:45:00+00:00'
+base: core20
+
+# grade is set to dangerous because the gadget is not signed nor from the store
+grade: dangerous
+
+snaps:
+- # This is our custom, dev gadget snap
+  # It has no channel and id, because it isn't in the store.
+  # We’re going to build it locally and pass it to the image builder. 
+  name: pc
+  type: gadget
+  # default-channel: 20/stable
+  # id: UqFziVZDHLSyO3TqSWgNBoAdHbLI4dAH
+
+- name: pc-kernel
+  type: kernel
+  default-channel: 20/stable
+  id: pYVQrBcKmBa0mZ4CCN7ExT6jH8rY1hza
+
+- name: edgexfoundry
+  type: app
+  default-channel: latest/stable
+  id: AZGf0KNnh8aqdkbGATNuRuxnt1GNRKkV
+
+- name: edgex-device-mqtt
+  type: app
+  default-channel: latest/stable
+  id: AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX
+
+# Config provider for edgex-device-mqtt
+- name: edgex-demo-ambient-sensing-config
+  type: app
+  default-channel: latest/edge
+  id: 5riI41SdX1gJYFdFXC5eoKzzBUEzSgqq
+
+# MQTT Broker
+- name: mosquitto
+  type : app
+  default-channel: latest/stable
+  id: mDxT0cGOHKSs62MOHSK5Ype0Na5UU2LB
+```
 
 > ℹ **Tip**  
 > Find your developer ID:
