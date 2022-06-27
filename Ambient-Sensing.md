@@ -258,7 +258,7 @@ Since we want to create an OS image pre-loaded with the configured system, we ne
 
 This snap should be build and uploaded to the store. We use `edgex-demo-ambient-sensing-config` as the snap name. 
 
-- [ ] The source code is available at TBA
+The source code is available at: https://github.com/canonical/edgex-demos/tree/main/ambient-sensing/config-provider
 
 Build and upload (release to `latest/edge` channel):
 ```
@@ -388,10 +388,15 @@ Add the following to `gadget.yml`:
 defaults:
   # edgex-device-mqtt
   AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX:
+    # automatically start the service
     autostart: true
 
 connections:
-   -  plug: AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX:device-config
+   -  # Connect edgex-device-mqtt's plug (consumer) to 
+      #   edgex-demo-ambient-sensing-config's slot (provider) to override the
+      #   default configuration files by bind-mounting provider's "res" directory
+      #   on top of the provider's "res" directory.
+      plug: AeVDP4oaKGCL9fT0u7lbNKxupwXrGiMX:device-config
       slot: 5riI41SdX1gJYFdFXC5eoKzzBUEzSgqq:device-config
 ```
 
