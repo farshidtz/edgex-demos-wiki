@@ -190,7 +190,7 @@ http http://localhost:59880/api/v2/reading/device/name/pluto-dht22?limit=2 --bod
 Querying from another device is possible via the API Gateway and with appropriate credentials.
 Refer to the [docs](https://docs.edgexfoundry.org/2.2/getting-started/Ch-GettingStartedSnapUsers/#adding-api-gateway-users) to learn how to add a user and pass its token to query externally.
 
-## Visualizing sensor data with Grafana
+<!-- ## Visualizing sensor data with Grafana
 We use Grafana to query the readings from EdgeX Core Data. We use a Grafana plugin called [JSON API](https://grafana.com/grafana/plugins/marcusolsson-json-datasource/)to query and pick the needed information.
 
 #### Install
@@ -248,7 +248,7 @@ Auto refresh doesn’t work in the query editor, but only on the dashboard. Refr
 
 Save and go back to the dashboard view. It should auto refresh every 5s as previously configured.
 
-Setup a panel for humidity by cloning the Temperature panel and changing the relevant fields.
+Setup a panel for humidity by cloning the Temperature panel and changing the relevant fields. -->
 
 ## Creating an OS image with all the above
 Now, let's create an OS image that includes all the above (except for the sensing part) and can be easily flashed on storage medium to create a bootable drive. This will make it very easy to onboard gateway devices preloaded with the EdgeX stack!
